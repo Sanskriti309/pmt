@@ -1,0 +1,123 @@
+{% extends "main/base.html" %}
+
+{% block title %}Leave Balance{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+{% include "web/leaves/modals.html" %}
+
+<div class="main-wrapper">
+
+    <div class="page-wrapper">
+
+        <div class="content container-fluid">
+
+            <div class="page-header">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="page-title">Leave Balances</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#">Leave</a></li>
+                            <li class="breadcrumb-item active">Leave Balances</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% if is_superuser %}
+            <div class="row filter-row mb-4">
+                <div class="col-sm-6 col-md-3">
+                    <div class="input-block  mb-3 form-focus">
+                        <select class="searchoption w-100 floating" name="employee_id" id="employeeSelect">
+                            <option value="">All</option>
+                            {% for employee in employees %}
+                            <option value="{{ employee.id }}">{% if employee.first_name != '' %} {{ employee.first_name }} {{ employee.last_name }} {% else %} {{ employee.username }} {% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <button class="btn btn-primary" onclick="searchLeaveBalance()">Search</button>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped custom-table mb-0">
+                            <thead>
+                                <tr>
+                                    {% for column_name in column_names %}
+                                    <th>{{ column_name }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in leave_data %}
+                                <tr>
+                                    {% if is_superuser %}
+                                    {% for column_name, value in data.items %}
+                                    <td class="{% if forloop.first %}table-avatar{% endif %}">
+                                        {% if not forloop.first %}
+                                        <span class="btn btn-warning btn-sm">
+                                            <b>{{ value }}</b>
+                                        </span>
+                                        {% else %}
+                                        {{ value }}
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                    {% else %}
+                                    {% for column_name, value in data.items %}
+                                    {% if not forloop.first %}
+                                    <td class="{% if forloop.first %}table-avatar{% endif %}">
+                                        <span class="btn btn-warning btn-sm">
+                                            <b>{{ value }}</b>
+                                        </span>
+                                    </td>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination justify-content-between mt-2">
+                <div class="d-flex align-items-center">
+                    <span class="current">
+                        Page {{ leave_data.number }} of {{ leave_data.paginator.num_pages }}
+                    </span>
+                </div>
+    
+                <div class="d-flex align-items-center">
+                    <span class="step-links">
+                        {% if leave_data.has_previous %}
+                            <a href="?employee_id={{ selected_employee }}&page=1" class="btn btn-primary">&laquo; First</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ leave_data.previous_page_number }}" class="btn btn-primary">Previous</a>
+                        {% endif %}
+    
+                        {% if leave_data.has_next %}
+                            <a href="?employee_id={{ selected_employee }}&page={{ leave_data.next_page_number }}" class="btn btn-primary">Next</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ leave_data.paginator.num_pages }}" class="btn btn-primary">Last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function searchLeaveBalance() {
+        var selectedEmployee = document.getElementById('employeeSelect').value;
+        window.location.href = '{% url "leave:leave_balance" %}?employee_id=' + selectedEmployee;
+    }
+</script>
+{% endblock %}

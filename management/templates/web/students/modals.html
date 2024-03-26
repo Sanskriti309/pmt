@@ -1,0 +1,598 @@
+{% load static %}
+
+
+<!-- Add Enquiry Modal -->
+<div id="add_enquiry" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Enquiry </h5>
+                <button type="button " class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="modal-body">
+                        <form id="addEnquiryForm" class="disable-button" method="post" action="{% url 'students:enquiry' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Name<span class="text-danger">*</span></label>
+                                        <input name="name" id="addName" class="form-control name require" value="{{ enquiry.name }}" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Name  Format!</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Father Name<span class="text-danger">*</span></label>
+                                        <input name="father_name" id="addFatherName" class="form-control name require" value="{{ enquiry.father_name }}" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Father Name  Format!</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Mother Name<span class="text-danger">*</span></label>
+                                        <input name="mother_name" id="addMotherName" class="form-control name floating require" value="{{ enquiry.mother_name }}" type="text" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Gender <span class="text-danger">*</span></label>
+                                        <select name="gender" class="select2 addgender require" id="addGender" name="gender" required style="width: 100%;">
+                                            <option>---</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                            <option value="o">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">DOB <span class="text-danger">*</span></label>
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input name="dob" id="addDOB" class="form-control floating datetimepicker pastselect require" value="{{ enquiry.dob }}" type="text" required>
+                                            </div>
+                                            <label class="focus-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Enquiry Date<span class="text-danger">*</span></label>
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input name="enquiry_date" id="addEnquiryDate" class="form-control floating datetimepicker pastselect require" value="{{ enquiry.enquiry_date }}" type="text" required>
+                                            </div>
+                                            <label class="focus-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                        <input name="address" id="addAddress" class="form-control require" value="{{ enquiry.address }}" type="text" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label"> Pincode <span class="text-danger">*</span></label>
+                                        <input name="pincode" id="addPincode" class="form-control pincode floating" value="{{ enquiry.pincode }}" type="text">
+                                        <span class="errorMessagePincode wrongmsg">Invalid Pincode Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Contact No. <span class="text-danger">*</span></label>
+                                        <input name="contact_no" id="addContact" class="form-control mobileno require" value="{{ enquiry.contact_no }}" type="text" required>
+                                        <span class="errorMessageMobile wrongmsg">Invalid Mobile Number Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label"> Whatsapp No. </label>
+                                        <input name="whatsapp_no" id="addWhatsapp" class="form-control mobileno" value="{{ enquiry.whatsapp_no }}"  type="text">
+                                        <span class="errorMessageMobile wrongmsg">Invalid Mobile Number Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Email</label>
+                                        <input name="email" id="addEmail" class="form-control email" value="{{ enquiry.email }}" type="email">
+                                        <span class="error-msg wrongmsg">Invalid email address!</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Course Interested <span class="text-danger">*</span></label>
+                                        <div class="col-md-12">
+                                            <select name="course_interested" id="addCourseInterested"
+                                                class="form-control select2 addcourse require" required style="width: 100%;">
+                                                <option>---</option>
+                                                {% for course in courses %}
+                                                <option value="{{ course.id }}">{{ course.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Discounted Fee</label>
+                                        <input name="discounted_fee" id="addDiscountFee" class="form-control feelimit" value="{{ enquiry.discounted_fee }}" type="text">
+                                        <span class="errorMessageFee wrongmsg">Invalid Fee Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Education</label>
+                                        <input name="education" id="addEducation" class="form-control name" value="{{ enquiry.education }}" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12">
+                                    <div class="d-flex justify-content-center">
+                                        <button type="submit" class="btn btn-primary text-white savebutton px-5" id="saveEnquiryButton" disabled> Save</button>
+                                        <div class="spinner spinner-border text-primary" role="status" id="saveEnquirySpinner">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit enquiry modal -->
+<div id="edit_enquiry" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Enquiry </h5>
+                <button type="button " class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="modal-body">
+                        <form id="editEnquiryForm" class="disable-button" method="post" action="{% url 'students:enquiry' %}">                            
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Name<span class="text-danger">*</span></label>
+                                        <input name="name" id="editName" class="form-control name require" value="{{ enquiry.name }}" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Name Format!</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Father name<span class="text-danger">*</span></label>
+                                        <input name="father_name" id="editFatherName" value="{{ enquiry.father_name }}" class="form-control name require" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Father Name Format!</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Mother name <span class="text-danger"></span></label>
+                                        <input name="mother_name" id="editMotherName" class="form-control name floating" value="{{ enquiry.mother_name }}" type="text">
+                                        <span class="error-message wrongmsg">Invalid Mother Name Format!</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Dob <span class="text-danger"></span></label>
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input name="dob" value="{{ enquiry.dob }}" class="form-control floating datetimepicker" type="text">
+                                            </div>
+                                            <label class="focus-label"></label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Gender
+                                            <span class="text-danger">*</span></label>
+                                        <select name="gender" id="editGender" class="select2 require editgender" style="width: 100%;" required>
+                                            <option value="M" {% if gender == 'M' %}selected{% endif %}>Male</option>
+                                            <option value="F" {% if gender == 'F' %}selected{% endif %}>Female</option>
+                                            <option value="O" {% if gender == 'O' %}selected{% endif %}>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                        <input name="address" id="editAddress" class="form-control require" value="{{ enquiry.address }}" type="text" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label"> Pincode <span class="text-danger">*</span></label>
+                                        <input name="pincode" id="editPincode" class="form-control pincode require floating" value="{{ enquiry.pincode }}" type="text" required>
+                                        <span class="errorMessagePincode wrongmsg">Invalid Pincode Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Contact no <span class="text-danger">*</span></label>
+                                        <input name="contact_no" id="editContact" class="form-control mobileno require" value="{{ enquiry.contact_no }}" type="text" required>
+                                        <span class="errorMessageMobile wrongmsg">Invalid Mobile Number Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label"> Whatsapp no <span class="text-danger"></span></label>
+                                        <input name="whatsapp_no" id="editWhatsapp" class="form-control mobileno" value="{{ enquiry.whatsapp_no }}" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Email<span class="text-danger"></span></label>
+                                        <input name="email" id="editEmail" class="form-control" value="{{ enquiry.email }}" type="email">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Course interested <span class="text-danger">*</span></label>
+                                        <div class="col-md-12">
+                                            <select name="course_interested" id="editCourse" class="form-control select2 editcourse require" style="width: 100%;" required>
+                                                <option>---</option>
+                                                {% for course in courses %}
+                                                    <option value="{{ course.id }}" {% if course.id == enquiry.course_interested.id %}selected{% endif %}>{{course.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Discounted Fee<span class="text-danger"></span></label>
+                                        <input name="discounted_fee" id="editDiscountedFee" class="form-control feelimit" value="{{ enquiry.discounted_fee }}" type="text">
+                                        <span class="errorMessageFee wrongmsg">Invalid Fee Format! </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Education<span class="text-danger"></span></label>
+                                        <input name="education" id="editEducation" class="form-control name " value="{{ enquiry.education }}" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Enquiry date<span class="text-danger">*</span></label>
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input name="enquiry_date" id="editDate" value="{{ enquiry.enquiry_date }}"class="form-control floating datetimepicker require" type="text" required>
+                                            </div>
+                                            <label class="focus-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="editEnquiryId" name="enquiry_id">
+                                <div class="input-block mb-3 row">
+                                    <center>
+                                        <div class="col-sm-4 col-md-4">
+                                            <div class="d-grid">
+                                                <button type="submit" id="editEnquiryButton" class="btn btn-primary text-white savebutton" disabled>Save</button>
+                                                <div class="spinner spinner-border text-primary" role="status" id="editEnquirySpinner">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </center>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Admission -->
+<div id="add_students" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="modal-body">
+                        <form id="addStudentForm" method="post" action="{% url 'students:admission' %}" enctype="multipart/form-data"  class="disable-button">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Enquiry <span
+                                                class="text-danger">*</span></label>
+                                        <div class="col-md-12">
+                                            <select class="select2 studentenquiry require" name="enquiry" style="width: 100%;" required>
+                                                <option>---</option>
+                                                {% for enquiries in enquiry %}
+                                                    <option value="{{enquiries.id}}">{{ enquiries.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Admission Date
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-block form-focus ">
+                                            <div class="cal-icon">
+                                                <input class="form-control floating datetimepicker pastselect require" name="admission_date" value="{{ admission.admission_date }}" type="text" required>
+                                                <label class="focus-label">Date</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label ">Student Photo</label>
+                                        <span class="text-danger">*</span>
+                                        <input class="form-control require" name="student_photo" value="{{ admission.student_photo}}" type="file" accept=".png, .jpg, .jpeg .svg" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Qualification Doc</label>
+                                        <input class="form-control" name="qualification_docs" value="{{ admission.qualification_docs }}" type="file">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Address Doc Type <span class="text-danger">*</span></label>
+                                        <select class="select2 addreshdoc require" name="address_doc_type" style="width: 100%;" required>
+                                            <option>---</option>
+                                            <option value="aadhaar">Aadhaar Card</option>
+                                            <option value="voter">Voter ID Card</option>
+                                            <option value="others">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label ">Address Doc</label>
+                                        <input class="form-control" name="address_docs" value="{{ admission.address_docs}}" type="file">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Admission Fee <span class="text-danger">*</span></label>
+                                        <input class="form-control require" name="admission_fee" type="number" value="{{ admission.admission_fee }}" required>
+                                    </div>
+                                </div>
+                                <div class="submit-section">
+                                    <button type="submit" class="btn btn-primary submit-btn text-white savebutton" id="saveAdmissionButton" disabled>Save</button>
+                                    <div class="spinner-border text-primary" style="display: none;" role="status" id="saveAdmissionSpinner">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Admission  -->
+<div id="edit_students" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm" enctype="multipart/form-data" method="post" action="{% url 'students:admission' %}" class="disable-button">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Enquiry <span class="text-danger">*</span></label>
+                                <select class="select2 editaddreshdoc require" name="enquiry" id="editEnquiry" data-live-search="true" required style="width: 100%;" title="Select Enquiry">
+                                    {% for enquiries in enquiry %}
+                                    <option value="{{ enquiries.id }}">{{ enquiries.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Admission Date</label>
+                                <div class="input-block form-focus">
+                                    <div class="cal-icon">
+                                        <input class="form-control floating datetimepicker p-3 require" type="text" name="admission_date" id="editAdmissionDate" value="{{ admission.admission_date }}" required> 
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label ">Student Photo</label>
+                                <input class="form-control" type="file" name="student_photo" id="editStudentPhoto" value="{{ admission.student_photo }}" accept=".png, .jpg, .jpeg .svg">
+                                <button class="btn btn-primary btn-sm view-file-button mt-2" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label ">Qualification Doc</label>
+                                <input class="form-control" type="file" name="qualification_docs" value="{{ admission.qualification_docs }}" id="editQualificationDocs">
+                                <button class="btn btn-primary btn-sm view-file-button mt-2" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Address Doc Type <span
+                                        class="text-danger">*</span></label>
+                                <select name="address_doc_type" id="editAddressDocType" class="select2 editaddreshdoc" style="width: 100%;">
+                                    <option value="aadhaar" {% if address_doc_type == 'aadhaar' %}selected{% endif %}>Aadhaar Card</option>
+                                    <option value="voter" {% if address_doc_type == 'voter' %}selected{% endif %}>Voter ID Card</option>
+                                    <option value="others" {% if address_doc_type == 'others' %}selected{% endif %}>Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label ">Address Docs</label>
+                                <input class="form-control" type="file" name="address_docs" value="{{ admission.address_docs}}" id="editAddressDocs">
+                                <button class="btn btn-primary btn-sm view-file-button mt-2" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Admission Fee <span class="text-danger">*</span></label>
+                                <input class="form-control require" type="number" name="admission_fee" id="editAdmissionFee" value="{{ admission.admission_fee}}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editStudentId" name="student_id">
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-primary submit-btn text-white savebutton" id="editAdmissionButton" disabled>Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="editAdmissionSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Fee Management  -->
+<div id="add_fee_management" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Fee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addFeeManagementForm" method="post" action="{% url 'students:fee_management' %}" class="disable-button">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Admission<span class="text-danger">*</span></label>
+                                <select class="select2 addfee require" style="width: 100%;" name="admission" id="addFeeAdmission" required>
+                                    <option>---</option>
+                                    {% for admission in admissions %}
+                                        <option value="{{ admission.id}}">{{ admission.enquiry.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Fee Paid Date</label>
+                                <div class="input-block form-focus ">
+                                    <div class="cal-icon">
+                                        <input class="form-control floating datetimepicker pastselect require" value="{{ fee_paid_date }}" name="fee_paid_date" id="addFeePaidDate" type="text" required>
+                                        <label class="focus-label">Date</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Paid Fee <span class="text-danger">*</span></label>
+                                <input class="form-control feelimit require" type="text" value="{{ paid_fee }}" name="paid_fee" id="addPaidFee" required>
+                                <span class="errorMessageFee wrongmsg">Invalid Fee Format! </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-primary submit-btn savebutton" id="saveFeeButton" disabled>Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveFeeSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Fee Detail Modal  -->
+<div class="modal custom-modal fade" id="feeDetailModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="admissionDetailsModalLabel"></h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fee Paid</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeDetailTableBody"></tbody>
+                </table>
+                <div class="row invoice-payment">
+                    <div class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="m-b-20">
+                            <div class="table-responsive no-border">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Total Paid:</th>
+                                            <td class="text-end" id="totalPaid"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Due:</th>
+                                            <td class="text-end text-primary" id="totalDue">
+                                                <h5></h5>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,177 @@
+{% extends "main/base.html" %}
+
+{% block title %}Fee Management{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+{% include "web/students/modals.html" %}
+
+<div class="main-wrapper">
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="page-title">Fee Management</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#">Students</a></li>
+                            <li class="breadcrumb-item active">Fee Management</li>
+                        </ul>
+                    </div>
+                    <div class="col-auto float-end ms-auto">
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_fee_management">
+                            <i class="fa-solid fa-plus"></i> Add Fee Management</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-group m-b-30">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="d-block">Total Paid</span>
+                                    </div>
+                                </div>
+                                <h3 class="mb-3">{{ total_amount_paid }}</h3>
+                                <div class="progress height-five mb-2">
+                                    <div class="progress-bar bg-primary" style="width: {{paid_percentage}}%;" role="progressbar" aria-valuenow="40"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="d-block">Total Due</span>
+                                    </div>
+                                </div>
+                                <h3 class="mb-3">{{ total_due_amount }}</h3>
+                                <div class="progress height-five mb-2">
+                                    <div class="progress-bar bg-primary" style="width: {{due_percentage}}%;" role="progressbar" aria-valuenow="40"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <span class="d-block">{% if filter_option == 'active' %}Active Students{% else %}Inactive Students{% endif %}</span>
+                                    </div>
+                                </div>
+                                <h3 class="mb-3">{% if filter_option == 'active' %}{{ active_users_count }}{% else %}{{ inactive_users_count }}{% endif %}</h3>
+                                <div class="progress height-five mb-2">
+                                    <div class="progress-bar bg-primary" style="width: {% if filter_option == 'active' %}{{ total_active_percentage }}{% else %}{{ total_inactive_percentage }}{% endif %}%;" role="progressbar" aria-valuenow="40"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row filter-row">
+                <div class="col-sm-6 col-md-4 col-lg-3 col-12">
+                    <div class="input-block mb-3 form-focus select-focus">
+                        <select class="searchoption floating" style="width: 100%;" id="filterOption" name="filter_option">
+                            <option>---</option>
+                            <option value="active" {% if filter_option == 'active' %}selected{% endif %}>Active Admission</option>
+                            <option value="inactive" {% if filter_option == 'inactive' %}selected{% endif %}>Inactive Admission</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4 col-lg-3 col-12">
+                    <div class="input-block mb-3 form-focus select-focus">
+                        <select class="searchoption floating" style="width: 100%;" id="admissionFilter" name="admission_filter">
+                            <option value="">All</option>
+                            {% for admission_entry in admissions %}
+                                <option value="{{ admission_entry.id }}" {% if selected_admission == admission_entry.id %}selected{% endif %}>
+                                    {{ admission_entry.enquiry.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+                    <a href="#" class="btn btn-primary w-35" onclick="applyFilter()"> Go </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="fee-management" class="table table-striped custom-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Admission</th>
+                                    <th>Paid Fee</th>
+                                    <th>Fee Paid Date</th>
+                                    <th>Total Due</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for admission_entry in admissions_with_fee %}
+                                <tr>
+                                    <td>
+                                        <a href="#" class="edit-fee-link" data-bs-toggle="modal"
+                                            data-bs-target="#feeDetailModal" data-fee-id="{{admission_entry.id}}"
+                                            data-admission="{{ admission_entry.admission.id }}" data-admission-name="{{ admission_entry.admission.enquiry.name }}"
+                                            data-course-name="{{ admission_entry.admission.enquiry.course_interested.name }}" data-total-paid="{{ admission_entry.total_paid_fee }}"
+                                            data-total-due="{{ admission_entry.total_due }}" data-paid-fee="{{ admission_entry.latest_paid_fee }}"
+                                            data-fee-entries="{{ admission_entry.fee_entries|safe }}">{{ admission_entry.admission.enquiry.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ admission_entry.total_paid_fee }}</td>
+                                    <td>{{ admission_entry.latest_fee_paid_date|default:"N/A" }}</td>
+                                    <td>{{ admission_entry.total_due }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="pagination justify-content-between">
+                            <span class="step-links">
+                                <span class="current">
+                                    Page {{ admissions_with_fee.number }} of {{ admissions_with_fee.paginator.num_pages }}.
+                                </span>
+                            </span>
+
+                            <span class="step-links mt-2">
+                                {% if admissions_with_fee.has_previous %}
+                                    <a href="?page=1" class="btn btn-primary">&laquo; First</a>
+                                    <a href="?page={{ admissions_with_fee.previous_page_number }}" class="btn btn-primary">Previous</a>
+                                {% endif %}
+
+                                {% if admissions_with_fee.has_next %}
+                                    <a href="?page={{ admissions_with_fee.next_page_number }}" class="btn btn-primary">Next</a>
+                                    <a href="?page={{ admissions_with_fee.paginator.num_pages }}" class="btn btn-primary">Last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const feeManagementUrl = "{% url 'students:fee_management' %}";
+    function applyFilter() {
+        const filterOption = document.getElementById('filterOption').value;
+        const admissionFilter = document.getElementById('admissionFilter').value;
+        window.location.href = `${feeManagementUrl}?filter_option=${filterOption}&admission_filter=${admissionFilter}`;
+    }
+
+    function displayMessages() {
+        toastr.remove();
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    }
+</script>
+
+{% endblock %}

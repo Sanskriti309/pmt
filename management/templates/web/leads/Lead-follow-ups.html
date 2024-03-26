@@ -1,0 +1,104 @@
+{% extends "main/base.html" %}
+
+{% block title %}Lead follow ups{% endblock %}
+
+{% load static %}
+
+{% block model %}
+
+{% include "web/leads/modals.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-wrapper" style="min-height: 372px;">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Lead Follow Up</h3>
+                    <div class="col-auto float-end ms-auto">
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_follow"
+                            data-bs-dismiss="modal"><i class="fa-solid fa-plus"></i> Add Lead Follow Up</a>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="#">Leads</a></li>
+                        <li class="breadcrumb-item active">Lead Follow Up</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-nowrap custom-table mb-0 ">
+                        <thead>
+                            <tr>
+                                <th id="inlineCheckbox1">#</th>
+                                <th>Lead Name</th>
+                                <th>Date Followed Up</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for follow_up in lead_follow_ups %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td class="lead-follow-name">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#edit_follow"
+                                        class="edit-follow-link" data-follow-id="{{ follow_up.id }}" data-lead-id="{{ follow_up.lead.first_name }} {{ follow_up.lead.last_name }}" data-first-name="{{ follow_up.lead.first_name }}" data-last-name="{{ follow_up.lead.last_name }}" data-date_followed_up="{{ follow_up.date_followed_up|date:'m-d-Y' }}" data-notes="{{ follow_up.notes }}">
+                                        {{ follow_up.lead.first_name }} {{ follow_up.lead.last_name | default:"" }}
+                                    </a>
+                                </td>
+                                <td>{{ follow_up.date_followed_up|date:"m-d-Y" }}</td>
+                                <td title="Click To Pause The Comment Box" data-bs-toggle="popover" tabindex="0" data-bs-trigger="hover focus" data-bs-content="{{ follow_up.notes }}">
+                                    <span name="" disabled id="">
+                                        {{ follow_up.notes|slice:":20"|safe }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination justify-content-between mt-2">
+                    <div class="d-flex align-items-center">
+                        <span class="current">
+                            Page {{ lead_follow_ups.number }} of {{ lead_follow_ups.paginator.num_pages }}.
+                        </span>
+                    </div>
+    
+                    <div class="d-flex align-items-center">
+                        <span class="step-links">
+                            {% if lead_follow_ups.has_previous %}
+                                <a href="?type={{ page_type }}&page=1" class="btn btn-primary">&laquo; First</a>
+                                <a href="?type={{ page_type }}&page={{ lead_follow_ups.previous_page_number }}" class="btn btn-primary">Previous</a>
+                            {% endif %}
+    
+                            {% if lead_follow_ups.has_next %}
+                                <a href="?type={{ page_type }}&page={{ lead_follow_ups.next_page_number }}" class="btn btn-primary">Next</a>
+                                <a href="?type={{ page_type }}&page={{ lead_follow_ups.paginator.num_pages }}" class="btn btn-primary">Last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function displayMessages() {
+        toastr.remove();
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    }
+</script>
+
+
+{% endblock %}

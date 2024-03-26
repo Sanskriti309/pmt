@@ -1,0 +1,803 @@
+{% load static %}
+
+<!-- Update Profile Info Modal  -->
+<div id="profile_info" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profile Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm" method="post" class="disable-button" action="{% url 'update_profile' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="profile-img-wrap edit-img">
+                                <img class="inline-block" src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static 'assets/img/profiles/avatar-02.jpg' %}{% endif %}" alt="User Image">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">First Name</label>
+                                        <input type="text" class="form-control name" name="first_name" value="{{ user_data.first_name }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Last Name</label>
+                                        <input type="text" class="form-control name" name="last_name" value="{{ user_data.last_name }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Birth Date</label>
+                                        <div class="cal-icon">
+                                            <input class="form-control datetimepicker pastselect" type="text" name="dob" value="{% if profile.dob %}{{ profile.dob|date:'d-m-Y' }}{% endif %}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Gender <span class="text-danger">*</span></label>
+                                        <select name="gender" class="select form-control floating require" required>
+                                            <option value="---">---</option>
+                                            <option value="Male" {% if profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                                            <option value="Female" {% if profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                                            <option value="Other" {% if profile.gender == 'Other' %}selected{% endif %}>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Address</label>
+                                <input type="text" class="form-control" name="address" value="{{ profile.address }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Phone Number</label>
+                                <input type="text" class="form-control mobileno" name="phone" value="{% if profile.phone %}{{ profile.phone }}{% else %}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Email</label>
+                                <input type="text" class="form-control email" name="email" value="{{ user_data.email }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Report To</label>
+                                <input type="text" class="form-control text" name="report_to" value="{% if profile.report_to.first_name %}{{ profile.report_to.first_name }} {{ profile.report_to.last_name }}{% else %}{{ profile.report_to.username }}{% endif %}" readonly
+                                >
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label ">Photo</label>
+                                <input class="form-control" name="photo" value="{{ profile.photo }}" id="editPhoto" type="file" accept=".png, .jpg, .jpeg .svg">
+                                <button class="btn btn-primary btn-sm view-file-button mt-2" type="button"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section mt-3 mb-3">
+                        <button class="btn btn-primary submit-btn savebutton" type="submit" id="saveProfileButton" disabled>Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveProfileSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Personal Information Modal  -->
+<div id="personal_info_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Personal Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="personal_info_form" method="post" action="{% url 'update_personal_info' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Passport No.</label>
+                                <input type="text" class="form-control limit limittext20">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Passport Expiry Date</label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker futureselect" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Tel</label>
+                                <input class="form-control mobileno" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Nationality</label>
+                                <input class="form-control name" type="text" name="nationality" value="{% if profile.nationality %}{{ profile.nationality }}{% else %}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Religion</label>
+                                <input class="form-control" type="text" name="religion" value="{% if profile.religion %}{{ profile.religion }}{% else %}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Marital Status</label>
+                                <select class="form-control personalinfomarital" name="marital_status" style="width: 100%;">
+                                    <option value="">---</option>
+                                    <option value="Single" {% if profile.marital_status == 'Single' %}selected{% endif %}>Single</option>
+                                    <option value="Married" {% if profile.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                                    <option value="Divorced" {% if profile.marital_status == 'Divorced' %}selected{% endif %}>Divorced</option>
+                                    <option value="Widowed" {% if profile.marital_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Employment of Spouse</label>
+                                <input class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">No. of Children </label>
+                                <input class="form-control" type="number" name="no_of_children" value="{{ profile.no_of_children }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section mt-3 mb-3">
+                        <button class="btn btn-primary submit-btn" id="savePersonalInfoButton" type="submit">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="savePersonalInfoSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Bank Information Modal  -->
+<div id="bank_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Bank Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bank_form" method="post" action="{% url 'update_bank' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Bank Name<span
+                                    class="text-danger"></span></label>
+                                <input type="text" class="form-control name" name="bank_name" value="{{ bank_account.name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Bank Account<span
+                                    class="text-danger"></span></label>
+                                <input class="form-control floating limit limittext16" type="number" name="bank_account" value="{{ bank_account.account }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">IFSC Code <span class="text-danger"></span></label>
+                                <input class="form-control limit limittext20" type="text" name="ifsc_code" value="{{ bank_account.ifsc }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Pan Card<span
+                                    class="text-danger"></span></label>
+                                <input class="form-control limit limittext20" type="text" name="pan_card" value="{{ bank_account.pan }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section mt-3 mb-3">
+                        <button class="btn btn-primary submit-btn" id="saveBankButton" type="submit">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveBankSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Family Information Modal  -->
+<div id="family_info_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Family Informations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="family_form" class="disable-button" method="post" action="{% url 'update_family_info' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <input type="hidden" id="editFamilyDetail" name="family_info_id">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Name</label>
+                                <input type="text" class="form-control name require" value="{{ family.name }}" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Relation</label>
+                                <input class="form-control" type="text" name="relation" value="{{ family.relation }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Birth Date</label>
+                                <div class="cal-icon">
+                                    <input class="form-control pastselect datetimepicker" value="{{ family.dob }}" type="text" name="dob">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Phone Number</label>
+                                <input class="form-control mobileno require" type="number" value="{{ family.phone }}" name="phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn savebutton" type="submit" id="saveFamilyButton" disabled>Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveFamilySpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Education Information Modal  -->
+<div id="education_info" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Education Informations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="educationForm" method="post" action="{% url 'update_education_info' %}">
+                    {% csrf_token %}
+                    <div class="form-scroll">
+                        {% for eduction_information in education %}
+                            <div class="card">
+                                <div class="card-body">
+                                    <input type="hidden" id="editEducation" name="education_detail_id_{{eduction_information.id}}" value={{eduction_information.id}}>
+                                    <h3 class="card-title">Education Informations</h3>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" name="college_{{eduction_information.id}}"
+                                                    value="{{ eduction_information.college }}"
+                                                    class="form-control floating name">
+                                                <label class="focus-label">Institution</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" value="Computer Science" class="form-control floating name">
+                                                <label class="focus-label">Subject</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" name="from_year_{{eduction_information.id}}" value="{{ eduction_information.from_year }}" class="form-control floating limit limittext4" >
+                                                <label class="focus-label">From Year<span
+                                                    class="text-danger"></span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" name="to_year_{{eduction_information.id}}" value="{{ eduction_information.to_year }}" class="form-control floating limit limittext4" >
+                                                <label class="focus-label">To Year<span class="text-danger"></span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" name="stream_{{eduction_information.id}}" value="{{ eduction_information.stream}}" class="form-control floating name">
+                                                <label class="focus-label">Degree</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus focused">
+                                                <input type="text" value="Grade A" class="form-control floating name">
+                                                <label class="focus-label">Grade</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn" id="updateEducationButton">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="updateEducationSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Experience Information Modal  -->
+<div id="experience_info" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Experience Informations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="experienceForm" method="post" action="{% url 'update_experience_info' %}">
+                {% csrf_token %}
+                    <div class="form-scroll">
+                        {% for experience in experiences %}
+                            <div class="card">
+                                <div class="card-body">
+                                    <input type="hidden" id="editExperience" name="experience_detail_id_{{experience.id}}" value={{experience.id}}>
+                                    <h3 class="card-title">Experience Informations</h3>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus">
+                                                <input type="text" class="form-control name floating" name="company_{{experience.id}}" value="{{ experience.company }}">
+                                                <label class="focus-label">Company Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus">
+                                                <input type="text" class="form-control name floating" value="United States">
+                                                <label class="focus-label">Location</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus">
+                                                <input type="text" class="form-control name floating" value="Web Developer">
+                                                <label class="focus-label">Job Position</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus">
+                                                <div class="cal-icon">
+                                                    <input type="text" class="form-control floating datetimepicker" name="from_date_{{experience.id}}">
+                                                </div>
+                                                <label class="focus-label">Period From</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-block mb-3 form-focus">
+                                                <div class="cal-icon">
+                                                    <input type="text" class="form-control floating datetimepicker" name="to_date_{{experience.id}}">
+                                                </div>
+                                                <label class="focus-label">Period To</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn" type="submit" id="updateExperienceButton">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="updateExperienceSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Emergency Contact Modal  -->
+<div id="emergency_contact_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Emergency Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="emergencyContactForm" method="post" action="{% url 'update_emergency_contact' %}">
+                    {% csrf_token %}
+                    {% for contact in emergency_contacts %}
+                        <div class="card">
+                            <div class="card-body">
+                                <input type="hidden" id="editEmergencyContact" name="emergency_contact_id_{{contact.id}}" value={{contact.id}}>
+                                {% if contact.contact_type == 'Primary' %}
+                                    <h3 class="card-title">Primary Contact</h3>
+                                {% else %}
+                                    <h3 class="card-title">Secondary Contact</h3>
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Name <span class="text-danger"></span></label>
+                                            <input type="text" class="form-control name" name="name_{{contact.id}}" id="editName" value="{{ contact.name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Relationship <span class="text-danger"></span></label>
+                                            <input class="form-control name" type="text" name="relation_{{contact.id}}" id="editRelation" value="{{ contact.relation }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Phone <span class="text-danger"></span></label>
+                                            <input class="form-control mobileno" type="text" name="phone_{{contact.id}}" id="editPhone" value="{{ contact.phone }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Contact Type</label>
+                                            <select class="form-select edit_contact_type" name="contact_type_{{contact.id}}" style="width: 100%;">
+                                                <option>---</option>
+                                                <option value="Primary" {% if contact.contact_type == 'Primary' %} selected {% endif %}>Primary</option>
+                                                <option value="Secondary" {% if contact.contact_type == 'Secondary' %} selected {% endif %}>Secondary</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn" id="updateEmergencyButton">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="updateEmergencySpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Family Information  -->
+<div id="add_family_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Add Family Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addFamilyForm" method="post" action="{% url 'update_family_info' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Name</label>
+                                <input type="text" class="form-control name" name="name" value="{{ family.name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Phone</label>
+                                <input class="form-control floating limit limittext10" type="number" name="phone" value="{{ family.phone }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Relation</label>
+                                <input class="form-control limit limittext20" type="text" name="relation" value="{{ family.relation }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">DOB</label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker pastselect" type="text" name="dob" value="{{ family.dob }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn savebutton" type="submit" id="addFamilyButton">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="addFamilySpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Emergency Contact Modal  -->
+<div id="add_emergency_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Emergency Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addEmergencyContactForm" method="post" action="{% url 'update_emergency_contact' %}">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-body">
+                            <input type="hidden" name="emergency_contact_id_0" value="0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Name</label>
+                                        <input type="text" class="form-control name" name="name_0" value="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Relationship</label>
+                                        <input class="form-control name" type="text" name="relation_0" value="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Phone</label>
+                                        <input class="form-control mobileno" type="text" name="phone_0" value="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Contact Type</label>
+                                        <select class="form-select contact_type" name="contact_type_0" style="width: 100%;">
+                                            <option>---</option>
+                                            <option value="Primary">Primary</option>
+                                            <option value="Secondary">Secondary</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-primary submit-btn savebutton" id="addEmergencyButton">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="addEmergencySpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Education Information  -->
+<div id="add_education_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Education</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addEducationForm" method="post" action="{% url 'update_education_info' %}">
+                {% csrf_token %}
+                    <input type="hidden" name="education_detail_id_0" value="0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">College</label>
+                                <input type="text" class="form-control name" name="college_0" value="">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Stream</label>
+                                <input class="form-control name" type="text" name="stream_0" value="">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">From Year</label>
+                                <input type="text" name="from_year_0" value="" class="form-control limit limittext4" >
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">To Year</label>
+                                <input type="text" name="to_year_0" value="" class="form-control limit limittext4" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn savebutton" id="addEducationButton" type="submit">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="addEducationSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Experience Information Modal  -->
+<div id="add_experience_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Experience Informations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addExperienceForm" method="post" action="{% url 'update_experience_info' %}">
+                {% csrf_token %}
+                    <div class="form-scroll">
+                        <div class="card">
+                            <div class="card-body">
+                                <input type="hidden" name="experience_detail_id_0" value="0">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3 form-focus">
+                                            <input type="text" class="form-control name floating" name="company_0"value="">
+                                            <label class="focus-label">Company Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control floating datetimepicker" name="from_date_0" value="">
+                                            </div>
+                                            <label class="focus-label">Period From</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control floating datetimepicker" name="to_date_0" value="">
+                                            </div>
+                                            <label class="focus-label">Period To</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button class="btn btn-primary submit-btn savebutton" id="addExperienceButton" type="submit">Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="addExperienceSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Assets Info Modal  -->
+<div id="assets_info_modal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assets Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Name</label>
+                            <input type="text" class="form-control" id="editAssetName" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Condition Type</label>
+                            <input type="text" class="form-control" id="editCondition" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Assets Type</label>
+                            <input class="form-control" type="text" id="editAssetType" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Costs</label>
+                            <input class="form-control" type="text" id="editCost" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Assigned Id</label>
+                            <input type="text" class="form-control" id="editAssignId" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Serial Number</label>
+                            <input type="text" class="form-control" id="editSerial" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label ">Assigned By</label>
+                            <input type="text" class="form-control" id="editAssignedBy" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label ">Assigned Date</label>
+                            <input type="text" class="form-control" id="editAssignedDate" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

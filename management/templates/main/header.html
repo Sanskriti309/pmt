@@ -1,0 +1,113 @@
+{% load static %}
+<div class="main-wrapper">
+    <div class="header">
+        <div class="header-left">
+            <a href="{%url 'dashboard'%}" class="logo">
+                <img src="{% static 'assets/img/tech.png' %}" width="40" height="40" alt="Logo">
+            </a>
+            <a href="{%url 'dashboard'%}" class="logo2">
+                <img src="{% static 'assets/img/tech.png' %}" width="40" height="40" alt="Logo">
+            </a>
+        </div>
+        <a id="toggle_btn" href="javascript:void(0);">
+            <span class="bar-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </a>
+        <div class="page-title-box">
+            <h3>TechPath Research and Development PVT</h3>
+        </div>
+        <a id="mobile_btn" class="mobile_btn" href="#sidebar"><i class="fa-solid fa-bars"></i></a>
+        <ul class="nav user-menu">
+            <li class="nav-item dropdown has-arrow main-drop">
+                <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+                    <span class="user-img">
+                        <img src="{% if user.profile.photo %}{{ user.profile.photo.url }}{% else %}{% static 'assets/img/profiles/avatar-02.jpg' %}{% endif %}" alt="User Image">
+                        <span class="status online"></span>
+                    </span>
+                    <span>{{user.username}}</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+            <div id="sidebar-menu" class="sidebar-menu">
+                <ul class="sidebar-vertical">
+                    <li class="menu-title">
+                        <span>Main</span>
+                    </li>
+                    <li class="submenu">
+                        <a href="#"><i class="la la-dashboard"></i> <span> Dashboard</span> <span class="menu-arrow"></span></a>
+                        <ul>
+                   
+                            <li><a {% if request.path == "/" %} class="active" {% endif %} href="{%url 'dashboard'%}">Employee Dashboard</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-title">
+                        {% with user_groups=user.groups.all %}
+                            {% if user_groups and 'Students' not in user_groups|join:"," %}
+                                {% if user_groups and 'Admin' in user_groups|join:"," %}
+                                    <span>Admin</span>
+                                {% elif user_groups and 'Manager' in user_groups|join:"," %}
+                                    <span>Manager</span>
+                                {% elif user_groups and 'Employee' in user_groups|join:"," %}
+                                    <span>Employee</span>
+                                {% elif user_groups and 'Marketing' in user_groups|join:"," %}
+                                    <span>Marketer</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    </li>
+                    {% with user_groups=user.groups.all %}
+                        {% if user_groups and 'Students' not in user_groups|join:"," %}
+                            {% if user_groups and 'Manager' in user_groups|join:"," or 'Admin' in user_groups|join:"," or 'Marketing' in user_groups|join:"," %}
+                                <li class="submenu">
+                                    <a href="#"><i class="fa-solid fa-circle-chevron-right"></i> <span>Leads</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a {% if request.path == "/leads/leads/" %} class="active" {% endif %} href="{% url 'leads:lead' %}">Leads</a></li>
+                                        <li><a {% if request.path == "/leads/lead-followup/" %} class="active" {% endif %} href="{% url 'leads:lead_follow_up' %}">Lead Follow Up</a></li>
+                                    </ul>
+                                </li>
+                                <li class="submenu">
+                                    <a href="#"><i class="fa-solid fa-circle-chevron-right"></i> <span>Students</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a {% if request.path == "/students/admissions/" %} class="active" {% endif %} href="{% url 'students:admission' %}">Admissions</a></li>
+                                        <li><a {% if request.path == "/students/enquiry/" or request.path == "/students/enquiry-list/" %} class="active" {% endif %} href="{% url 'students:enquiry' %}">Enquiry</a></li>
+                                        <li><a {% if request.path == "/students/fee-management/" %} class="active" {% endif %} href="{% url 'students:fee_management' %}">Fees Management</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li class="submenu">
+                                <a href="#"><i class="fa-solid fa-circle-chevron-right"></i> <span>Assets</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a {% if request.path == "/assets/manage-assets/" %} class="active" {% endif %} href="{% url 'assets:manage_assets' %}">Manage Assets</a></li>
+                                </ul>
+                            </li>
+                            <li class="submenu">
+                                <a href="#"><i class="fa-solid fa-circle-chevron-right"></i> <span>Leave</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a {% if request.path == "/leave/leave-balances/" %} class="active" {% endif %} href="{% url 'leave:leave_balance' %}">Leave Balances</a></li>
+                                    <li><a {% if request.path == "/leave/leaves/" %} class="active" {% endif %} href="{% url 'leave:leave' %}">Leaves</a></li>
+                                </ul>
+                            </li>
+                            <li class="submenu">
+                                <a href="#"><i class="fa-solid fa-circle-chevron-right"></i> <span>Performance</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a {% if request.path == "/performance/performance/" %} class="active" {% endif %} href="{% url 'performance:performance' %}">Performance</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

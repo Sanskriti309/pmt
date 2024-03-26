@@ -1,0 +1,235 @@
+{% load static %}
+
+<!-- Add Leaves -->
+<div id="add_leaves" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Leave</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="addLeave" class="modal-body">
+                <form id="addLeaveForm" class="disable-button" method="post" action="{% url 'leave:leave' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% if not is_superuser %}
+                            <div class="col-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Employee</label>
+                                    <input type="text" class="form-control" value="{% if user.first_name != '' %} {{ user.first_name }} {{ user.last_name }} {% else %} {{ user.username }} {% endif %}" disabled>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Employee <span class="text-danger">*</span></label>
+                                    <select class="select2 addleaveemp require" name="employee_name" id="employeeName" style="width: 100%;" required>
+                                        <option>---</option>
+                                        {% for employee in employees %}
+                                            <option value="{{ employee.username }}">{% if employee.first_name != '' %} {{ employee.first_name }} {{ employee.last_name }} {% else %} {{ employee.username }} {% endif %}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-6">
+                            <div class="input-block mb-3 col-6">
+                                <label class="col-form-label">Leave Type <span class="text-danger">*</span></label>
+                                <select class="select2 addleavetyp require" name="leave_type" id="leaveType" style="width: 100%;" required>
+                                    <option>---</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.name }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Start Date <span class="text-danger">*</span></label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker require" name="from_date" id="addFrom" value="{{ leave.start_date }}" type="text" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">End Date <span class="text-danger">*</span></label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker futureselect require" name="to_date" value="{{ leave.end_date }}" id="addEnd" type="text" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-block mb-3">
+                              <label class="col-form-label">Half Day</label>&nbsp;
+                              <input type="checkbox" class="productive" name="half_day_start" value="start" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-block mb-3">
+                              <label class="col-form-label">Half Day</label>&nbsp;
+                              <input type="checkbox" class="productive" name="half_day_end" value="end" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% if is_superuser %}
+                            <div class="col-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Requested Date<span class="text-danger">*</span></label>
+                                    <div class="cal-icon">
+                                        <input class="form-control datetimepicker" name="requested_date" id="requestedDate" value="{{ leave.requested_date }}" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if is_superuser %}
+                            <div class="col-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Status<span class="text-danger">*</span></label>
+                                    <select class="select leav_st require" name="leave_status" id="leave_Status"  style="width: 100%;" required>
+                                        <option>---</option>
+                                        {% for status in leave_statuses %}
+                                            <option value="{{ status.id }}">{{ status.status }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if is_superuser %}
+                            <div class="col-12">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Type<span class="text-danger">*</span></label>
+                                    <select class="select addtype" name="type" id="type" style="width: 100%;">
+                                        <option>---</option>
+                                        {% for type in types %}
+                                            <option value="{{ type.id }}">{{ type.type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Leave Reason <span class="text-danger">*</span></label>
+                                <textarea rows="2" class="form-control limit limittext50 require" name="reason_value" value="{{ leave.reason }}" id="reason" required></textarea>
+                                <div class="charcount remainingChars">50/50</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-primary savebutton" id="saveLeaveButton" disabled>Apply</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveLeaveSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Approve Leave Modal -->
+<div id="approve_leave" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Leave</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="approveForm" method="post" action="{% url 'leave:leave' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Employee</label>
+                                <input class="form-control" name="employee_names" readonly type="text" />
+                                <input type="hidden" name="employee_name" id="employeeUsername" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Leave Type</label>
+                                <input class="form-control" name="leave_type" id="leaveType" value="{{ leave.leave_type }}" readonly type="text" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">From</label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker" id="editFrom" name="from_date" value="{{ leave.from_date  }}" type="text" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="type" />
+                        <input type="hidden" name="requested_date" />
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">To</label>
+                                <div class="cal-icon">
+                                    <input class="form-control datetimepicker" id="editTo" name="to_date" value="{{ leave.to_date }}" type="text" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Half Day</label>&nbsp;
+                                <input type="checkbox" class="productive" name="edit_half_day_start" value="start" disabled />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Half Day</label>&nbsp;
+                                <input type="checkbox" class="productive" name="edit_half_day_end" value="end" disabled />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">Leave Status <span class="text-danger">*</span></label>
+                            <select class="select2 approvestatus" style="width: 100%;" name="leave_status" id="leaveStatus">
+                                {% for leave_status in leave_statuses %}
+                                    <option value="{{ leave_status.id }}" {% if leave_status.status == leave.status.status %}selected{% endif %}>{{ leave_status.status }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="input-block mb-3">
+                                <label class="col-form-label">Number of days</label>
+                                <input class="form-control" name="no_of_days" id="totalDays" readonly type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-block mb-3">
+                        <label class="col-form-label">Reason: </label>
+                        <span id="reasonText"></span>
+                    </div>
+                    <input type="hidden" id="reason" name="reason_value" />
+                    <div class="input-block mb-3">
+                        <label class="col-form-label">Notes: </label>
+                        <textarea rows="4" class="form-control" id="notes" value="{{ leave.reason }}" name="notes"></textarea>
+                    </div>
+                    <input type="hidden" id="approveLeaveId" name="leave_id">
+                    <div class="submit-section mt-3 mb-3">
+                        <button class="btn btn-primary savebutton" id="approveLeaveButton" type="submit">Update</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="approveLeaveSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

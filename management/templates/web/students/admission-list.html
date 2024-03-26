@@ -1,0 +1,132 @@
+{% extends "main/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+{% include "web/students/modals.html" %} 
+
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">Admission</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="#">Students</a></li>
+                        <li class="breadcrumb-item active">Admission List</li>
+                    </ul>
+                </div>
+                <div class="col-auto float-end ms-auto">
+                    <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_students"><i
+                            class="fa-solid fa-plus"></i> Add Student</a>
+                    <div class="view-icons">
+                        <a href="{% url 'students:admission' %}" class="grid-view btn btn-link"><i class="fa fa-th"></i></a>
+                        <a href="{{ admission_list_path }}" class="list-view btn btn-link active"><i
+                                class="fa-solid fa-bars"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row filter-row">
+            <div class="col-sm-6 col-md-3">
+                <div class="input-block mb-3 form-focus select-focus">
+                    <select id="selectStudent" name="select_student" class="select2 searchoption floating w-100">
+                        <option value="">Select Student</option>
+                        {% for enquiries in enquiry %}
+                            <option value="{{enquiries.id}}" {% if select_student == enquiries.id %}selected{% endif %}>{{ enquiries.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="focus-label">Name</label>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="input-block mb-3 form-focus select-focus">
+                    <select id="dateRangeSelect" class="select2 w-100 searchoption floating" name="date_range">
+                        <option value="">All</option>
+                        <option value="7" {% if date_range == '7' %}selected{% endif %}>Last 7 Days</option>
+                        <option value="30" {% if date_range == '30' %}selected{% endif %}>Last 1 Month</option>
+                        <option value="180" {% if date_range == '180' %}selected{% endif %}>Last 6 Month</option>
+                        <option value="365" {% if date_range == '365' %}selected{% endif %}>Last 1 Year</option>
+                    </select>
+                    <label class="focus-label">Admission Date</label>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="d-grid">
+                    <a href="#" class="btn btn-primary w-100" onclick="admissionFilter()"> Search </a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped custom-table">
+                        <thead>
+                            <tr>
+                                <th id="inlineCheckbox1">Name</th>
+                                <th> Admission Fee </th>
+                                <th>Course</th>
+                                <th>Admission Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for admission in admissions %}
+                                <tr>
+                                    <td>
+                                        <a class="dropdown-item edit-student-link" href="#" data-bs-toggle="modal" data-bs-target="#edit_students"
+                                            data-enquiry-id="{{ admission.enquiry.id }}" data-admission-id="{{ admission.id }}"
+                                            data-admission-fee="{{ admission.admission_fee }}" {% if admission.student_photo %}data-student-photo="{{ admission.student_photo.url }}"{% endif %}
+                                            {% if admission.qualification_docs %}data-qualification-docs="{{ admission.qualification_docs.url }}"{% endif %}
+                                            data-address-doc-type="{{ admission.address_doc_type }}" data-admission-date="{{ admission.admission_date }}"
+                                            {% if admission.address_docs %}data-address-docs="{{ admission.address_docs.url }}"{% endif %} >{{ admission.enquiry.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ admission.admission_fee }}</td>
+                                    <td>{{ admission.enquiry.course_interested.name }}</td>
+                                    <td>{{ admission.admission_date }}</td>
+                                  
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <span class="current">
+                            Page {{ admissions.number }} of {{ admissions.paginator.num_pages }}.
+                        </span>
+                    </div>
+    
+                    <div class="d-flex align-items-center">
+                        <span class="step-links">
+                            {% if admissions.has_previous %}
+                                <a href="?type={{ page_type }}&page=1{% if select_student %}&select_student={{ select_student }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}" class="btn btn-primary">&laquo; First</a>
+                                <a href="?type={{ page_type }}&page={{ admissions.previous_page_number }}{% if select_student %}&select_student={{ select_student }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}" class="btn btn-primary">Previous</a>
+                            {% endif %}
+    
+                            {% if admissions.has_next %}
+                                <a href="?type={{ page_type }}&page={{ admissions.next_page_number }}{% if select_student %}&select_student={{ select_student }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}" class="btn btn-primary">Next</a>
+                                <a href="?type={{ page_type }}&page={{ admissions.paginator.num_pages }}{% if select_student %}&select_student={{ select_student }}{% endif %}{% if date_range %}&date_range={{ date_range }}{% endif %}" class="btn btn-primary">Last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function displayMessages() {
+        {% for message in messages %}
+            toastr.remove();
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    }
+</script>
+
+{% endblock %}

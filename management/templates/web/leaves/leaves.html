@@ -1,0 +1,196 @@
+{% extends "main/base.html" %}
+
+{% block title %}Leave{% endblock %}
+
+{% load static %}
+
+{% block model %}
+
+{% include "web/leaves/modals.html" %}
+
+{% endblock%}
+
+{% block content %}
+
+<div class="main-wrapper">
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="page-title">Leaves</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="/">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="#">Leave</a>
+                            </li>
+                            <li class="breadcrumb-item active">Leaves</li>
+                        </ul>
+                    </div>
+                    {% if not is_marketing %}
+                        <div class="col-auto float-end ms-auto">
+                            <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_leaves">
+                                <i class="fa-solid fa-plus"></i> Add Leave
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if show_cards %}
+                <div class="row">
+                {% for key, value in leave_categories.items %}
+                    {% if key != 'Employee' %}
+                        <div class="col-md-4">
+                            <div class="stats-info">
+                                <h4 class="mb-3">{{ key }}</h4>
+                                <h6 class="mb-2">Remaining Leave Balance: {{ value.remaining_balance }} Days</h6>
+                                <h6>Approved Leave: {{ value.approved_count }}</h6>
+                                <h6>Pending Leave: {{ value.pending_count }} &nbsp;&nbsp; Rejected Leave: {{ value.rejected_count }}</h6>
+                            </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if is_superuser %}
+                <div class="row filter-row mb-4">
+                    <div class="col-sm-6 col-md-3">
+                        <div class="input-block mb-3 form-focus">
+                            <select class="searchoption w-100 floating" name="employee_id" id="employeeSelect">
+                                <option value="">All</option>
+                                {% for employee in employees %}
+                              
+                                    <option value="{{ employee.id }}">{% if employee.first_name != '' %} {{ employee.first_name }} {{ employee.last_name }} {% else %} {{ employee.username }} {% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <button class="btn btn-primary" onclick="searchLeaves()">Search</button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="leaveTable" class="table table-striped custom-table leave-employee-table mb-0">
+                            <thead>
+                                <tr>
+                                    {% for field in fields %}
+                                        {% if field == 'start date' %}
+                                            <th class="text-center">From</th>
+                                        {% elif field == 'end date' %}
+                                            <th class="text-center">To</th>
+                                        {% else %}
+                                            <th class="text-center">{{ field.title|join:"" }}</th>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if is_superuser and not is_marketing %}
+                                        <th class="text-end">Actions</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in leaves %}
+                                    <tr>
+                                        {% if is_superuser %}
+                                            <td class="text-center" style="text-transform: capitalize;">
+                                                {% if leave.employee.user.first_name != '' %} {{ leave.employee.user.first_name }} {{ leave.employee.user.last_name }} {% else %} {{ leave.employee.user.username }} {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        <td class="text-center">{{ leave.leave_type.name }}</td>
+                                        <td class="text-center">{{ leave.start_date|date:"d M Y" }}</td>
+                                        <td class="text-center">{{ leave.end_date|date:"d M Y" }}</td>
+                                        <td class="text-center">{{ leave.total_days }} days</td>
+                                        <td class="text-center">{{ leave.reason }}</td>
+                                        <td class="text-center">{% if leave.approved_by.first_name != '' %} {{ leave.approved_by.first_name }} {{ leave.approved_by.last_name }} {% else %} {{ leave.approved_by.username }} {% endif %}</td>
+                                        <td class="text-center">
+                                            <div class="action-label">
+                                                {% if leave.status.status == 'Pending' %}
+                                                    <a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
+                                                        <i class="fa-regular fa-circle-dot text-purple"></i>  Pending
+                                                    </a>
+                                                {% elif leave.status.status == 'Rejected' %}
+                                                    <a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
+                                                        <i class="fa-regular fa-circle-dot text-danger"></i>  Rejected
+                                                    </a>
+                                                {% else %}
+                                                    <a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
+                                                        <i class="fa-solid fa-circle-check text-success"></i>  Approved
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        {% if is_superuser and not is_marketing %}
+                                            <td class="text-end">
+                                                <a class="dropdown-item approve-leave" href="#" data-bs-toggle="modal" data-bs-target="#approve_leave"
+                                                data-leave-id="{{ leave.id }}" data-employee-username="{{ leave.employee.user.username }}"
+                                                data-employee-first-name="{{ leave.employee.user.first_name }}" data-employee-last-name="{{ leave.employee.user.last_name }}"
+                                                data-leave-type="{{ leave.leave_type.name }}" data-start-from="{{ leave.start_date|date:'d M Y' }}"
+                                                data-end-to="{{ leave.end_date|date:'d M Y' }}" data-reason="{{ leave.reason }}"
+                                                data-start-half="{{ leave.is_start_date_half_day }}" data-end-half="{{ leave.is_end_date_half_day }}"
+                                                data-total="{{ leave.total_days }}" data-leave-status="{{ leave.status.id }}" data-notes="{{ leave.notes }}"
+                                                data-type="{{ leave.type.id }}" data-requested-date="{{ leave.requested_date }}"
+                                                >
+                                                    <i class="fa-solid fa-pencil m-r-5"></i>
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                        {% if not is_superuser %}
+                                            <td class="text-end">
+                                                {{ leave.notes }}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination justify-content-between mt-2">
+                <div class="d-flex align-items-center">
+                    <span class="current">
+                        Page {{ leaves.number }} of {{ leaves.paginator.num_pages }}.
+                    </span>
+                </div>
+        
+                <div class="d-flex align-items-center">
+                    <span class="step-links">
+                        {% if leaves.has_previous %}
+                            <a href="?employee_id={{ selected_employee }}&page=1" class="btn btn-primary mt-2">&laquo; first</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ leaves.previous_page_number }}" class="btn btn-primary mt-2">previous</a>
+                        {% endif %}
+        
+                        {% if leaves.has_next %}
+                            <a href="?employee_id={{ selected_employee }}&page={{ leaves.next_page_number }}" class="btn btn-primary mt-2">next</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ leaves.paginator.num_pages }}" class="btn btn-primary mt-2">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const approveUrl = "{% url 'leave:leave' %}";
+    function searchLeaves() {
+        var selectedEmployee = document.getElementById('employeeSelect').value;
+        window.location.href = '{% url "leave:leave" %}?employee_id=' + selectedEmployee;
+    }
+
+    function displayMessages() {
+        {% for message in messages %}
+            toastr.remove();
+            toastr.{{ message.tags }}("{{ message }}");
+        {% endfor %}
+    }
+</script>
+
+{% endblock %}

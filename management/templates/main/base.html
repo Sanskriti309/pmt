@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}My Django Project{% endblock %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/img/favicon.png' %}">
+    <link rel="stylesheet" href="{% static '/assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'assets/css/line-awesome.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'assets/css/material.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/dataTables.bootstrap4.min.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fullcalendar.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/ckeditor.css' %}"> 
+    <link rel="stylesheet" href="{% static 'assets/toastr/toastr.css' %}">
+  </head>
+
+  <body>
+    {% include "main/header.html" %}
+
+    {% block content %}{% endblock %}
+
+    {% block model %} {% endblock %}
+    
+    <script src="{% static 'assets/js/jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'assets/js/fullcalendar.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.fullcalendar.js' %}"></script>
+    <script src="{% static 'assets/js/layout.js' %}"></script>
+    <script src="{% static 'assets/js/theme-settings.js' %}"></script>
+    <script src="{% static 'assets/js/greedynav.js' %}"></script>
+    <script src="{% static 'assets/js/app.js' %}"></script>
+    <script src="{% static 'assets/plugins/morris/morris.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/raphael/raphael.min.js' %}"></script>
+    <script src="{% static 'assets/js/chart.js' %}"></script>
+    <script src="{% static 'assets/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script src="{% static 'assets/js/attendence.js' %}"></script>
+    <script src="{% static 'assets/toastr/toastr.js' %}"></script>
+    <script src="{% static 'assets/js/ckeditor.js' %}"></script>
+  </body>
+</html>

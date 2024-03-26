@@ -1,0 +1,366 @@
+{% load static %}
+
+<!-- Add Lead Follow Up Modal -->
+<div id="add_follow" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Lead Follow Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="addLeadFollowUpForm" method="post" action="{% url 'leads:lead_follow_up' %}" class="disable-button">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Lead
+                                                <span class="text-danger">*</span><span
+                                                    class="text-danger"></span></label>
+                                            <div class="col-md-12">
+                                                <select class="form-control select2 require add_followearchoption" name="lead_id" id="addLeadData" required style="width: 100%;">
+                                                    <option>---</option>
+                                                    {%  for lead in leads  %}
+                                                        <option value="{{ lead.id }}">{{ lead.first_name }} {{lead.last_name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Date Followed Up 
+                                                <span class="text-danger"></span>
+                                            </label>
+                                            <div class="input-block mb-3 focus">
+                                                <div class="cal-icon">
+                                                    <input type="text" class="form-control floating datetimepicker pastselect" name="date_followed_up" value="{{ follow_up.date_followed_up }}" id="addDateFollow" required>
+                                                </div>
+                                                <label class="focus-label"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="input-block mb-3">
+                                            <label class="col-form-label">Notes</label>
+                                            <div class="col-md-12">
+                                                <textarea class="form-control limit limittext200" value="{{ follow_up.notes }}" rows="4" name="notes"></textarea>
+                                                <div class="charcount remainingChars">200/200</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section mt-3 mb-3">
+                                        <button class="btn btn-primary text-white savebutton" id="saveLeadFollowButton" type="submit" disabled>Save</button>
+                                        <div class="spinner-border text-primary" style="display: none;" role="status" id="saveLeadFollowSpinner">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Lead Follow Up Modal -->
+<div id="edit_follow" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">View Lead Follow Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Lead :-</label>
+                                        <input class="p-2 form-control" type="text" name="editlead" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Date Followed Up:-</label>
+                                        <input class="p-2 form-control" type="text" name="edit_date_followed_up" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Notes</label>
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" rows="4" name="edit_richTextField" readonly></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add lead Modal -->
+<div id="add_lead" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Lead</h5>
+                <button type="button " class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="modal-body">
+                        <form id="addLeadForm" method="post" action="{% url 'leads:lead' %}" class="disable-button">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">First Name<span class="text-danger">*</span></label>
+                                        <input class="form-control name require" name="first_name" value="{{ lead.first_name }}" type="text" required >
+                                        <span class="error-message wrongmsg">Invalid First Name Format!</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Last Name</label>
+                                        <input class="form-control name" name="last_name" value="{{ lead.last_name }}" type="text">
+                                        <span class="error-message wrongmsg">Invalid Last Name  Format!</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Email<span class="text-danger">*</span></label>
+                                        <input class="form-control email require" name="email" value="{{ lead.email }}" type="email" required>
+                                        <span class="error-msg wrongmsg">Invalid email address!</span>
+                                        
+                                    </div>
+                                    
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Phone<span class="text-danger">*</span></label>
+                                        <input class="form-control mobileno require floating" name="phone" value="{{ lead.phone }}" type="text" required>
+                                        <span class="errorMessageMobile wrongmsg">Invalid Mobile Number Format! </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Company<span class="text-danger">*</span></label>
+                                        <input class="form-control require name" name="company" value="{{ lead.company }}" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Company  Format!</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Website</label>
+                                        <input class="form-control website" name="website" value="{{ lead.website }}" type="text">
+                                        <span class="error-web wrongmsg">Invalid Website Name!</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label"> Position<span class="text-danger">*</span></label>
+                                        <input class="form-control name require floating" name="position" value="{{ lead.position }}" type="text" required>
+                                        <span class="error-message wrongmsg">Invalid Position  Format!</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Created Date<span class="text-danger">*</span></label>
+                                        <div class="input-block mb-3 form-focus">
+                                            <div class="cal-icon">
+                                                <input class="form-control floating require datetimepicker pastselect" value="{{ lead.created_date }}" name="created_date" type="text" required>
+                                            </div>
+                                            <label class="focus-label"></label>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Service Interested<span class="text-danger">*</span></label>
+                                        <div class="col-md-12">
+                                            <select class="form-control select2 modelsearchoption require" id="addService" name="service_interested" required style="width: 100%;">
+                                                <option>---</option>
+                                                {%  for service in services  %}
+                                                    <option  value="{{ service.id }}">{{ service.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Source<span class="text-danger">*</span></label>
+                                        <div class="col-md-12">
+                                            <select class="select2 modelsearchoption floating" id="addSource" name="source" style="width: 100%;">
+                                                <option>---</option>
+                                                {%  for lead_source in lead_sources  %}
+                                                    <option  value="{{ lead_source.id }}">{{ lead_source.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>                                        
+                                </div>                             
+
+
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Status<span class="text-danger">*</span></label>                                                     
+                                            <div class="col-md-12 ">
+                                            <select class="form-control select2 require modelsearchoption"  id="addStatus" name="status" required style="width: 100%;">
+                                                <option>---</option>
+                                                {% for lead_status in lead_statuses %}
+                                                    <option  value="{{ lead_status.id }}">{{ lead_status.status }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="input-block mb-3">
+                                        <label class="col-form-label">Notes</label>
+                                        <div class="col-md-12">
+                                            <textarea class="form-control limit limittext200" value="{{ lead.notes }}" rows="4" name="notes"></textarea>
+                                            <div class="charcount remainingChars">200/200</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="submit-section mt-3 mb-3">
+                                    <button class="btn btn-primary text-white savebutton" id="saveLeadButton" type="submit" disabled>Save</button>
+                                    <div class="spinner-border text-primary" style="display: none;" role="status" id="saveLeadSpinner">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Lead Modal  -->
+<div id="edit_lead" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">View Lead</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">First Name</label>
+                            <input class="form-control require name" name="first_name" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Last Name</label>
+                            <input class="form-control name" name="last_name" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Email</label>
+                            <input class="form-control email require" name="email" type="email" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Phone</label>
+                            <input class="form-control floating require mobileno" name="phone" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Company</label>
+                            <input class="form-control name require" name="company" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Website</label>
+                            <input class="form-control website" name="website" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label"> Position</label>
+                            <input class="form-control name floating require" name="position" type="text" id="editPosition" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Created Date</label>
+                            <input class="form-control" name="edit_created_date" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Service Interested</label>
+                            <input class="form-control" name="edit_service_interested" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Source</label>
+                            <input class="form-control" name="source" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Status</label>
+                            <input class="form-control" name="status" type="text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="input-block mb-3">
+                            <label class="col-form-label">Notes</label>
+                            <div class="col-md-12">
+                                <textarea class="form-control" rows="4" name="notes" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

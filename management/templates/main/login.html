@@ -1,0 +1,102 @@
+{% load static %}
+ 
+{% block content %}
+ 
+<body class="account-page">
+    <div class="main-wrapper">
+ 
+        <head>
+            <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/img/favicon.png' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/line-awesome.min.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/material.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/line-awesome.min.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+            <link rel="stylesheet" href="{% static 'assets/toastr/toastr.css' %}">
+            <script src="{% static 'assets/js/jquery-3.7.0.min.js' %}"></script>
+            <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+            <script src="{% static 'assets/js/app.js' %}"></script>
+            <script src="{% static 'assets/toastr/toastr.js' %}"></script>
+        </head>
+ 
+        <div class="account-content">
+            <div class="container">
+ 
+                <div class="account-logo">
+                    <a href="#"><img src="{% static 'assets/img/tech.png' %}" alt="Techpath Research and Development PVT."></a>
+                </div>
+ 
+                <div class="account-box">
+                    <div class="account-wrapper">
+                        <h3 class="account-title">Login</h3>
+                        <p class="account-subtitle">Access to our dashboard</p>
+                        <div id="login-error" class="text-danger mb-3" style="display: none;">Login failed. Please check your credentials.</div>
+                        <form id="loginForm" method="post">
+                            {% csrf_token %}
+                            <div class="input-block mb-4">
+                                <label class="col-form-label">Username</label>
+                                <input id="username" class="form-control" type="text" name="username" >
+                            </div>
+                            <div class="input-block mb-4">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <label class="col-form-label">Password</label>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a class="text-muted" href="{% url 'forgot_password' %}">
+                                            Forgot Password?
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="position-relative">
+                                    <input class="form-control" name="password" type="password" id="password">
+                                    <span class="fa-solid fa-eye-slash" id="toggle-password"></span>
+                                </div>
+                            </div>
+                            <div class="input-block mb-4 text-center">
+                                <button class="btn btn-primary account-btn" type="submit" id="loginbtn">Login</button>
+                            </div>
+                            <div class="account-footer">
+                                <p>Techpath Research and Development PVT.</p>
+                            </div>
+                        </form>
+ 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'assets/js/jquery-3.7.0.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loginForm").submit(function (event) {
+                event.preventDefault();
+                var formData = {
+                    'username': $('#username').val(),
+                    'password': $('#password').val()
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/login/',
+                    data: formData,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status === 200) {
+                            toastr.success('Login successful');
+                            window.location.href = '/?username=' + response.username;
+                        } else {
+                            $('#login-error').show();
+                        }
+                    },
+                    error: function (error) {
+                        $('#login-error').show();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+ 
+{% endblock %}

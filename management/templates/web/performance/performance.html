@@ -1,0 +1,264 @@
+{% extends "main/base.html" %}
+
+{% block title %}Performance{% endblock %}
+
+{% load static %}
+
+{% block model %}
+
+{% include "web/performance/modals.html" %}
+
+{%endblock %}
+
+{% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Performance Dashboard</h3>
+            {% if is_manager %}
+              <div class="col-auto float-end ms-auto">
+                <button type="button" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_performance" data-bs-dismiss="modal">
+                  <i class="fa-solid fa-plus"></i> Add Performance
+                </button>
+              </div>
+            {% endif %}
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="/">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item"><a href="#">Performance</a></li>
+              <li class="breadcrumb-item active">Performance</li>
+            </ul>
+          </div>
+          <div class="col-auto float-end ms-auto"></div>
+        </div>
+      </div>
+
+      {% if is_manager %}
+        <form action="" method="get">
+          <div class="row filter-row">
+            <div class="col-sm-6 col-md-3">
+              <div class="input-block mb-3 form-focus select-focus">
+                  <select id="dateRangeSelect" class="searchoption w-100 floating" name="filter">
+                      <option value="">All</option>
+                      <option value="last7days" {% if current_filter == 'last7days' %}selected{% endif %}>Last 7 Days</option>
+                      <option value="last15days" {% if current_filter == 'last15days' %}selected{% endif %}>Last 15 Month</option>
+                      <option value="last1month" {% if current_filter == 'last1month' %}selected{% endif %}>Last 1 Month</option>
+                      <option value="last2months" {% if current_filter == 'last2months' %}selected{% endif %}>Last 2 months</option>
+                      <option value="lastyear" {% if current_filter == 'lastyear' %}selected{% endif %}>Last Year</option>
+                  </select>
+                  <label class="focus-label">Performance  Filter</label>
+              </div>
+          </div>
+            <div class="col-sm-3">
+              <div class="d-grid"> 
+                <button type="submit" class="btn btn-primary"> Filter </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      {% endif %}
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="table-responsive">
+            {% if performances %}
+            <table class="table table-striped custom-table mb-0">
+              <thead>
+                <tr>
+                  {% for column in column_names %}
+                  <th class="text_center">{{ column.verbose_name|title }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for performance in performances %}
+                <tr class="text_center">
+                  <td>{{performance.id}}</td>
+                  {% if is_manager or is_marketing %}
+                    <td>
+                      {% if performance.user.first_name != ''  %}
+                        {{ performance.user.first_name }} {{ performance.user.last_name }} 
+                      {% else %}
+                        {{ performance.user }}
+                      {% endif %}
+                    </td>
+                  {% endif %}
+                  <td>{{performance.is_productive}}</td>
+                  <td>
+                    <div class="stars" data-rating="{{performance.rating}}" aria-readonly="true">
+                      <span class="fa fa-star"></span>
+                      <span class="fa fa-star"></span>
+                      <span class="fa fa-star"></span>
+                      <span class="fa fa-star"></span>
+                      <span class="fa fa-star"></span>
+                    </div>
+                  </td>
+                  <td>{{performance.progress}}</td>
+                  <td title="Click To Pause The Comment Box" data-bs-toggle="popover" tabindex="0"
+                    data-bs-trigger="hover focus" data-bs-html="true" data-bs-content="{{performance.comment}}">
+                    <span style="font-size: 16px;">{{ performance.comment|slice:":20"|safe }}</span>
+                  </td>
+                  <td>
+                    {{performance.performance_date}}
+                  </td>
+                  <td>
+                    {{performance.created_at}}
+                  </td>
+                  <td>
+                    {{performance.updated_at}}
+                  </td>
+                  <td>
+                    <div class="perdiv">                    
+                      {% for category in performance.performance_categories.all %}
+                          <span class="perform_tag">{{ category.category }}</span>
+                      {% endfor %}
+                    </div>                           
+                  </td>               
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <p>No performance data available.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var perdivs = document.querySelectorAll('.perdiv');
+    
+    perdivs.forEach(function(div) {
+      var spans = div.querySelectorAll('.perform_tag');
+      var spansArray = Array.from(spans);
+      
+      spansArray.sort(function(a, b) {
+        return a.textContent.length - b.textContent.length;
+      });
+      
+      div.innerHTML = '';   
+      spansArray.forEach(function(span) {
+        div.appendChild(span);
+      });
+    });
+  });
+
+
+  function initStarRating() {
+    const starContainers = document.querySelectorAll('.stars');
+
+    starContainers.forEach(starContainer => {
+      const rating = parseFloat(starContainer.getAttribute('data-rating'));
+      const stars = starContainer.querySelectorAll('.fa-star');
+      const fullStars = Math.floor(rating);
+      const remaining = rating - fullStars;
+
+      for (let i = 0; i < fullStars; i++) {
+        stars[i].classList.add('checked');
+      }
+
+      if (remaining > 0) {
+        const decimalClass = getDecimalClass(remaining);
+        stars[fullStars].classList.add(decimalClass);
+
+        if (rating === 4.1) {
+          stars[fullStars].classList.add('first-checked');
+        }
+      }
+
+      for (let i = fullStars + 1; i < stars.length; i++) {
+        stars[i].classList.remove('checked');
+        for (let i = 0; i < fullStars; i++) {
+          stars[i].classList.add('checked');
+        }
+
+        if (remaining > 0) {
+          const decimalClass = getDecimalClass(remaining);
+          stars[fullStars].classList.add(decimalClass);
+
+          if (rating === 4.1) {
+            stars[fullStars].classList.add('first-checked');
+          }
+        }
+
+        for (let i = fullStars + 1; i < stars.length; i++) {
+          stars[i].classList.remove('checked');
+        }
+
+      }
+
+      const isReadOnly = starContainer.getAttribute('aria-readonly')  === 'true';
+
+      stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          const currentRating = index + 1 && fullStars + 1;
+
+          if (!isReadOnly) {
+            updateStars(stars, currentRating);
+            starContainer.setAttribute('data-rating', currentRating);
+            starContainer.setAttribute('aria-valuenow', currentRating);
+          }
+        });
+      });
+    });
+
+    function updateStars(stars, rating) {
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('checked');
+        } else {
+          star.classList.remove('checked');
+        }
+
+        if (index === rating - 1) {
+          const remainingDecimal = rating - Math.floor(rating);
+          const decimalClass = getDecimalClass(remainingDecimal);
+          star.classList.add(decimalClass);
+        }
+      });
+    }
+
+    function getDecimalClass(remainingDecimal) {
+      if (remainingDecimal >= 0.9) {
+        return 'ninth-checked';
+      } else if (remainingDecimal >= 0.8) {
+        return 'eighth-checked';
+      } else if (remainingDecimal >= 0.7) {
+        return 'seventh-checked';
+      } else if (remainingDecimal >= 0.6) {
+        return 'sixth-checked';
+      } else if (remainingDecimal >= 0.5) {
+        return 'fifth-checked';
+      } else if (remainingDecimal >= 0.4) {
+        return 'fourth-checked';
+      } else if (remainingDecimal >= 0.3) {
+        return 'third-checked';
+      } else if (remainingDecimal >= 0.2) {
+        return 'second-checked';
+      } else if (remainingDecimal >= 0.1) {
+        return 'first-checked';
+      } else {
+        return 'checked';
+      }
+    }
+  }
+
+  function displayMessages() {
+    {% for message in messages %}
+      toastr.remove();
+      toastr.{{ message.tags }}("{{ message }}");
+    {% endfor %}
+  }
+  document.addEventListener('DOMContentLoaded', initStarRating);
+</script>
+{% endblock %}

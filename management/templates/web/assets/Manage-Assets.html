@@ -1,0 +1,149 @@
+{% extends "main/base.html" %}
+{% block title %}Manage Assets{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="page-wrapper">
+  <div class="content container-fluid">
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title">Manage Assets</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item "><a href="#">Assets</a></li>
+            <li class="breadcrumb-item active">Manage Assets</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="stats-info">
+          <h6>Total Assigned Assets</h6>
+          <h4>{{ assets|length }}</h4>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-info">
+          <h6>Total Cost</h6>
+          <h4>{{ total_cost }}</h4>
+        </div>
+      </div>
+    </div>
+    {% if isAccess %}
+      <div class="row filter-row">
+        <div class="col-sm-6 col-md-3 col-lg-3">
+          <div class="input-block mb-3 form-focus select-focus">
+            <select class="searchoption w-100 select2 floating" name="employee_id" id="employeeSelect">
+              <option value="">All </option>
+              {% for employee in employees %}
+              <option value="{{ employee.id }}" {% if selected_employee_id == employee.id %}selected{% endif %}>
+                {% if employee.first_name != '' %} {{ employee.first_name }} {{ employee.last_name }} {% else %} {{ employee.username }} {% endif %}
+              </option>
+              {% endfor %}
+            </select>
+            <label class="focus-label">Employee Name</label>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3 col-lg-3">
+          <button class="btn btn-primary" onclick="searchAssets()">Search</button>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table id="assetTable" class="table table-striped custom-table mb-0">
+            <thead>
+              <tr>
+                {% if isAccess and not selected_employee_id %}
+                  <th>Employee</th>
+                {% endif %}
+                <th>Asset Name</th>
+                <th>Asset Type</th>
+                <th>Asset Id</th>
+                <th>Cost</th>
+                <th>Assigned By</th>
+                <th>Assigned Date</th>
+                <th class="text-center sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                  aria-label="Status: activate to sort column ascending" style="width: 105.903px;">Condition Type</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              {% for ast in assets %}
+              <tr>
+                {% if isAccess and not selected_employee_id %}
+                  <td>
+                    {% if ast.assigned_to.first_name != '' %} {{ ast.assigned_to.first_name }} {{ ast.assigned_to.last_name }} {% else %} {{ ast.assigned_to.username }} {% endif %}
+                  </td>
+                {% endif %}
+                <td><a href="{{ast.image.url}}" target="_blank">{{ast.name|title}}</a></td>
+                <td>
+                  {{ast.assets_type|title}}
+                </td>
+                <td>#{{ast.assigned_Id}}</td>
+                <td>{{ast.cost}}</td>
+                <td>{{ ast.assigned_by|title }}</td>
+
+                <td>{{ast.assigned_date}}</td>
+                <td class="text-center">
+                  <div class="action-label">
+                    <a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
+                      {% if ast.condition_type == "new" %}
+                      <i class="fa-regular fa-circle-dot text-purple"></i>
+                      {% else %}
+                      <i class="fa-regular fa-circle-dot text-warning"></i>
+                      {% endif %}
+                      {{ ast.condition_type }}
+                    </a>
+                  </div>
+                </td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="pagination justify-content-between mt-2">
+      <div class="d-flex align-items-center">
+          <span class="current">
+              Page {{ assets.number }} of {{ assets.paginator.num_pages }}.
+          </span>
+      </div>
+
+      <div class="d-flex align-items-center">
+          <span class="step-links">
+              {% if assets.has_previous %}
+                  <a href="?employee_id={{ selected_employee }}&page=1" class="btn btn-primary mt-2">&laquo; first</a>
+                  <a href="?employee_id={{ selected_employee }}&page={{ assets.previous_page_number }}" class="btn btn-primary mt-2">previous</a>
+              {% endif %}
+
+              {% if assets.has_next %}
+                  <a href="?employee_id={{ selected_employee }}&page={{ assets.next_page_number }}" class="btn btn-primary mt-2">next</a>
+                  <a href="?employee_id={{ selected_employee }}&page={{ assets.paginator.num_pages }}" class="btn btn-primary mt-2">last &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  </div>
+  </div>
+</div>
+
+<script>
+  const manageAssetsUrl = "{% url 'assets:manage_assets' %}";
+
+  function searchAssets() {
+    var selectedEmployee = document.getElementById('employeeSelect').value;
+    window.location.href = manageAssetsUrl + '?employee_id=' + selectedEmployee;
+  }
+</script>
+
+{% endblock %}

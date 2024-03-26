@@ -1,0 +1,173 @@
+{% load static %}
+
+
+<!--Add Performance-->
+<div id="add_performance" class="modal custom-modal fade" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Performance</h5>
+        <button type="button " class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="modal-body">
+            <form id="addPerformanceForm" class="disable-button" method="post" action="{% url 'performance:performance' %}">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Employee Name<span class="text-danger">*</span></label>
+                    <div class="col-md-12">
+                      <select class="form-control select2 require selectperformemp" name="employee_name" required style="width: 100%;">
+                        <option>---</option>
+                        {% for employee in employees %}
+                        <option value="{{employee.id}}">
+                          {% if employee.first_name != '' %}
+                            {{employee.first_name}} {{employee.last_name}}
+                          {% else %}
+                            {{employee.username}}
+                          {% endif %}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Performance Date<span class="text-danger">*</span></label>
+                    <div class="input-block mb-3 form-focus">
+                      <div class="cal-icon">
+                        <input class="form-control floating require datetimepicker pastselect" name="performance_date" type="text" value="{{ performance.created_date }}" required />
+                      </div>
+                      <label class="focus-label"></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Category<span class="text-danger"></span></label>
+                    <div class="col-md-12">
+                      <select class="select select2" style="width: 100%;" name="performance_category" multiple>
+                        {% for category in performance_category %}
+                          <option value="{{category.id}}">{{category.category}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Rating<span class="text-danger">*</span></label>
+                    <input type="number" class="form-control star require" max="5" name="rating" placeholder="Rating" value="{{ performance.rating }}" required />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Is Productive?<span class="text-danger"></span></label>
+                    <label><input type="radio" class="productive" name="productive_2" value="True" />Yes</label>
+                    <label><input type="radio" class="productive" name="productive_2" value="False" />No</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Progress</label>
+                    <input class="perrange" type="range" name="progress" value="{{ performance.progress }}" min="1" max="100" />
+                    <output class="empOutput emp_progress">00</output>
+                  </div>
+                </div>
+                <div class="row col-12">
+                  <div class="input-block mb-3">
+                    <label class="col-form-label">Comment</label>
+                    <div class="col-md-12">
+                      <textarea class="form-control limit limittext200" rows="4" name="comment" value="{{ performance.comment }}"></textarea>
+                      <div class="charcount remainingChars">200/200</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="input-block mb-3 row">
+                  <center>
+                    <div class="col-sm-4 col-md-4">
+                      <div class="d-grid">
+                        <button type="submit" class="btn btn-primary text-white savebutton" id="savePerformanceButton" disabled>Submit</button>
+                        <div class="spinner-border text-primary" style="display: none;" role="status" id="savePerformanceSpinner">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
+                    </div>
+                  </center>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const inputs = document.querySelectorAll(".perrange");
+
+  inputs.forEach((input) => {
+    input.addEventListener("input", function () {
+      const output = this.nextElementSibling;
+      output.value = this.value;
+    });
+  });
+
+  window.onload = function () {
+        var inputs = document.getElementsByClassName("perrange");
+        for (var i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener("input", function () {
+            var value = this.value;
+            if (value < 30) {
+            this.style.background =
+                "linear-gradient(to right, red 0%, red " +
+                value +
+                "%, #fff " +
+                value +
+                "%, white 100%)";
+            this.style.setProperty("--thumb-background-color", "red");
+            this.style.setProperty("--range-process-border", "solid 1px red");
+            document.documentElement.style.setProperty(
+                "--userper-background-color",
+                "red"
+            );
+            } else if (value > 30 && value < 60) {
+            this.style.background =
+                "linear-gradient(to right, #ff9b44 0%, #ff9b44 " +
+                value +
+                "%, #fff " +
+                value +
+                "%, white 100%)";
+            this.style.setProperty("--thumb-background-color", "#ff9b44");
+            this.style.setProperty("--range-process-border", "solid 1px #ff9b44");
+            document.documentElement.style.setProperty(
+                "--userper-background-color",
+                "#ff9b44"
+            );
+            } else {
+            var gradientValue =
+                ((value - this.min) / (this.max - this.min)) * 100;
+            this.style.background =
+                "linear-gradient(to right, green 0%, green " +
+                gradientValue +
+                "%, #fff " +
+                gradientValue +
+                "%, white 100%)";
+            this.style.setProperty("--thumb-background-color", "green");
+            this.style.setProperty("--range-process-border", "solid 1px green");
+            document.documentElement.style.setProperty(
+                "--userper-background-color",
+                "green"
+            );
+            }
+        });
+        }
+    };
+</script>

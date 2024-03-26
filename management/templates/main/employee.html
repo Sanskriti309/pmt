@@ -1,0 +1,337 @@
+{% extends "main/base.html" %} 
+
+{% block title %}Home{% endblock %} 
+
+{% load static %} 
+
+{% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3 class="page-title">Attendance</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="#">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Attendance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card punch-status">
+            <div class="card-body">
+              <h5 class="card-title">
+                Timesheet <small class="text-muted" id="formattedDate"></small>
+              </h5>
+              <div class="punch-det">
+                <h6>Punch In at</h6>
+                <p id="customDateTime"></p>
+              </div>
+              <div class="punch-info">
+                <div class="punch-hours">
+                  <span id="timer">00:00:00</span>
+                </div>
+              </div>
+              <div class="punch-btn-section">
+                <button
+                  id="punchinbtn"
+                  onclick="startStop()"
+                  type="button"
+                  class="btn btn-primary punch-btn"
+                >
+                  Punch IN
+                </button>
+              </div>
+              <div class="statistics">
+                <div class="row">
+                  <div class="col-md-6 col-6 text-center">
+                    <div class="stats-box">
+                      <p>Break</p>
+                      <h6>1.21 hrs</h6>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-6 text-center">
+                    <div class="stats-box">
+                      <p>Overtime</p>
+                      <h6>3 hrs</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card att-statistics">
+            <div class="card-body">
+              <h5 class="card-title">Progress Statistics</h5>
+              <div class="stats-list">
+                <div class="stats-info">
+                  <p>
+                    Attendance Data <strong>22 <small>/22</small></strong>
+                  </p>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-primary w-31"
+                      role="progressbar"
+                      aria-valuenow="31"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="stats-info">
+                  <p>
+                    Previous Day <strong>40 <small>/ 100 %</small></strong>
+                  </p>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-warning w-31"
+                      role="progressbar"
+                      aria-valuenow="31"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="stats-info">
+                  <p>
+                    Previous Week <strong>90 <small>/ 100 %</small></strong>
+                  </p>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-success w-62"
+                      role="progressbar"
+                      aria-valuenow="62"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="stats-info">
+                  <p>
+                    Previous Months <strong>90 <small>/ 100 %</small></strong>
+                  </p>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-danger w-62"
+                      role="progressbar"
+                      aria-valuenow="62"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+                <div class="stats-info">
+                  <p>Overtime Work <strong>1</strong></p>
+                  <div class="progress">
+                    <div
+                      class="progress-bar bg-info w-62"
+                      role="progressbar"
+                      aria-valuenow="22"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card recent-activity">
+            <div class="card-body">
+              <h5 class="card-title">Today Activity</h5>
+              <ul class="res-activity-list">
+                <li>
+                  <p class="mb-0">Punch In and Punch Out Activity</p>
+                    <li class="res-activity-time">
+                      "Today Punch IN Time: 9:47:38 PM"
+                    </li>
+
+                  <p class="res-activity-time">
+                    <span id="punchActivity">
+                      <!-- <li>"Punch IN Time: 9:47:38 PM"</li> -->
+                    </span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if not isStudent %}
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header">  
+                  <h4><span class="card-title mb-0" title="Click To Hold The Msg Box" 
+                    tabindex="0" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="mouse hover" 
+                    data-bs-content=" <h5>Overall Leave Summary</h5>
+                    <span>Total Leave: {{ total_leave }}</span><br/>
+                    <span>Taken Leave: {{ balanced_leave }}</span><br/>
+                    <span>Balanced Leave: {{ taken_leave }}</span>">
+                    Leave Type</span>
+                  </h4>         
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped mb-0">
+                    <thead>
+                      <tr>
+                        <th>Leave Category</th>
+                        <th>Max Leave</th>
+                        <th>Leave Balance</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {% for balance in leave_balances %}
+                      <tr>
+                          <td>{{ balance.leave_category.name }}</td>
+                          <td>{{ balance.leave_category.max_leaves }}</td>
+                          <td>{{ balance.leave_balance }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+
+                
+                
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title mb-0">Other Staff Leave</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped mb-0">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th >Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for leave in other_staff_leave_list %}
+                      <tr>
+                          <td>{{ leave.Name }}</td>
+                          <td>{{ leave.Date }}</td>
+                      </tr>
+                  {% empty %}
+                      <tr>
+                          <td colspan="2">No leave records found.</td>
+                      </tr>
+                  {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title mb-0">Total Assigned Assets</h4>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="table-responsive">
+                    <table id="assetTable" class="table table-striped custom-table mb-0">
+                      <thead>
+                        <tr>
+                          {% if isAccess and not selected_employee_id %}
+                            <th>Employee</th>
+                          {% endif %}
+                          <th>Asset Name</th>
+                          <th>Asset Type</th>
+                          <th>Asset Id</th>
+                          <th>Cost</th>
+                          <th>Assigned By</th>
+                          <th>Assigned Date</th>
+                          <th class="text-center sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                            aria-label="Status: activate to sort column ascending" style="width: 105.903px;">Condition Type</th>
+          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for ast in assets %}
+                        <tr>
+                          {% if isAccess and not selected_employee_id %}
+                            <td>
+                              {% if ast.assigned_to.first_name != '' %} {{ ast.assigned_to.first_name }} {{ ast.assigned_to.last_name }} {% else %} {{ ast.assigned_to.username }} {% endif %}
+                            </td>
+                          {% endif %}
+                          <td><a href="{{ast.image.url}}" target="_blank">{{ast.name|title}}</a></td>
+                          <td>
+                            {{ast.assets_type|title}}
+                          </td>
+                          <td>#{{ast.assigned_Id}}</td>
+                          <td>{{ast.cost}}</td>
+                          <td>{{ ast.assigned_by|title }}</td>
+          
+                          <td>{{ast.assigned_date}}</td>
+                          <td class="text-center">
+                            <div class="action-label">
+                              <a class="btn btn-white btn-sm btn-rounded" href="javascript:void(0);">
+                                {% if ast.condition_type == "new" %}
+                                <i class="fa-regular fa-circle-dot text-purple"></i>
+                                {% else %}
+                                <i class="fa-regular fa-circle-dot text-warning"></i>
+                                {% endif %}
+                                {{ ast.condition_type }}
+                              </a>
+                            </div>
+                          </td>
+          
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="pagination justify-content-between mt-2">
+                <div class="d-flex align-items-center">
+                    <span class="current">
+                        Page {{ assets.number }} of {{ assets.paginator.num_pages }}.
+                    </span>
+                </div>
+          
+                <div class="d-flex align-items-center">
+                    <span class="step-links">
+                        {% if assets.has_previous %}
+                            <a href="?employee_id={{ selected_employee }}&page=1" class="btn btn-primary mt-2">&laquo; first</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ assets.previous_page_number }}" class="btn btn-primary mt-2">previous</a>
+                        {% endif %}
+          
+                        {% if assets.has_next %}
+                            <a href="?employee_id={{ selected_employee }}&page={{ assets.next_page_number }}" class="btn btn-primary mt-2">next</a>
+                            <a href="?employee_id={{ selected_employee }}&page={{ assets.paginator.num_pages }}" class="btn btn-primary mt-2">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
